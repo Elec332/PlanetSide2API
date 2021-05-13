@@ -1,20 +1,20 @@
 package nl.elec332.planetside2.impl;
 
 import nl.elec332.planetside2.api.ICensusAPI;
-import nl.elec332.planetside2.api.IPS2API;
-import nl.elec332.planetside2.api.IPlayerRequestHandler;
-import nl.elec332.planetside2.api.player.*;
-import nl.elec332.planetside2.api.registry.IPS2ItemRegistry;
-import nl.elec332.planetside2.api.registry.IPS2Object;
-import nl.elec332.planetside2.api.registry.IPS2ObjectManager;
-import nl.elec332.planetside2.api.registry.IPS2ObjectRegistry;
-import nl.elec332.planetside2.api.weapons.ICertificationLine;
-import nl.elec332.planetside2.api.weapons.IItemCategory;
-import nl.elec332.planetside2.api.weapons.IItemType;
-import nl.elec332.planetside2.api.weapons.IVehicle;
-import nl.elec332.planetside2.api.world.*;
+import nl.elec332.planetside2.api.objects.IPS2API;
+import nl.elec332.planetside2.api.objects.IPlayerRequestHandler;
+import nl.elec332.planetside2.api.objects.misc.IMetaGameEvent;
+import nl.elec332.planetside2.api.objects.misc.IMetaGameEventState;
+import nl.elec332.planetside2.api.objects.player.*;
+import nl.elec332.planetside2.api.objects.registry.IPS2ItemRegistry;
+import nl.elec332.planetside2.api.objects.registry.IPS2Object;
+import nl.elec332.planetside2.api.objects.registry.IPS2ObjectManager;
+import nl.elec332.planetside2.api.objects.registry.IPS2ObjectRegistry;
+import nl.elec332.planetside2.api.objects.weapons.*;
+import nl.elec332.planetside2.api.objects.world.*;
 import nl.elec332.planetside2.impl.objects.*;
 import nl.elec332.planetside2.impl.registry.*;
+import nl.elec332.planetside2.util.Constants;
 import nl.elec332.planetside2.util.census.CensusRequestBuilder;
 
 import java.lang.reflect.Field;
@@ -35,7 +35,7 @@ class PS2APIImpl implements IPS2API {
         this.continents = new StaticPS2ObjectRegistry<>(api, PS2Continent.class, "zone");
         this.facilityTypes = new StaticPS2ObjectRegistry<>(api, PS2FacilityType.class, "facility_type");
         this.factions = new StaticPS2ObjectRegistry<>(api, PS2Faction.class, "faction");
-        this.bases = new StaticPS2ObjectRegistry<>(api, PS2Base.class, "map_region", "c:join=map_hex^list:1^inject_at:hexes^show:x'y'hex_type");
+        this.bases = new StaticPS2ObjectRegistry<>(api, PS2Facility.class, "map_region", "c:join=map_hex^list:1^inject_at:hexes^show:x'y'hex_type");
         this.hexTypes = new StaticUndocumentedObjectRegistry<>(PS2HexType.class, r -> {
             r.accept(new PS2HexType(0, "Unrestricted", false));
             r.accept(new PS2HexType(2, "Restricted_Faction", true));
@@ -59,14 +59,14 @@ class PS2APIImpl implements IPS2API {
                         )
                         .tree("member_map", "character_id")
                         .build()
-        );
+                , "name_lower", "alias_lower").setCacheCheck(o -> o.getMembers() < Constants.API_SAFE_RETURN_SIZE);
         this.players = new DynamicUncachedObjectManager<>(api, "character", PS2Player.class,
                 new CensusRequestBuilder()
                         .show()
                         .show("character_id", "name.first", "faction_id", "times.creation", "times.last_save", "times.last_login", "battle_rank.value", "prestige_level")
                         .join("outfit_member", j -> j.injectAt("outfit_member").show("outfit_id"))
                         .build()
-        );
+                , "name.first_lower");
         this.requestHandler = new PlayerRequestHandler(api);
         this.classes = new StaticUndocumentedObjectRegistry<>(PS2Class.class, r -> {
             r.accept(new PS2Class(1, "Infiltrator"));
@@ -83,6 +83,11 @@ class PS2APIImpl implements IPS2API {
         this.itemCategories = new StaticPS2ObjectRegistry<>(api, PS2ItemCategory.class, "item_category", "c:lang=en&c:join=item^list:1^show:item_id^inject_at:items_list");
         this.itemRegistry = new PS2ItemRegistry(api, () -> this.itemTypes, () -> this.factions);
         this.certificationLines = new StaticPS2ObjectRegistry<>(api, PS2CertificationLine.class, "skill_set", "c:lang=en");
+        this.loadouts = new StaticPS2ObjectRegistry<>(api, PS2Loadout.class, "loadout", "c:hide=faction_id");
+        this.achievements = new StaticPS2ObjectRegistry<>(api, PS2Achievement.class, "achievement", "c:lang=en&c:show=achievement_id,item_id,repeatable,name,description");
+        this.weapons = new StaticPS2ObjectRegistry<>(api, PS2Weapon.class, "weapon", "c:join=item_to_weapon^show:item_id^inject_at:item(item^inject_at:item^show:name.en)");
+        this.metaGameEvents = new StaticPS2ObjectRegistry<>(api, PS2MetaGameEvent.class, "metagame_event", "c:lang=en");
+        this.metaGameStates = new StaticPS2ObjectRegistry<>(api, PS2MetaGameEventState.class, "metagame_event_state");
         init();
     }
 
@@ -95,7 +100,7 @@ class PS2APIImpl implements IPS2API {
     private final StaticPS2ObjectRegistry<PS2Server> servers;
     private final StaticPS2ObjectRegistry<PS2Continent> continents;
     private final StaticPS2ObjectRegistry<PS2FacilityType> facilityTypes;
-    private final StaticPS2ObjectRegistry<PS2Base> bases;
+    private final StaticPS2ObjectRegistry<PS2Facility> bases;
     private final IPS2ObjectRegistry<PS2HexType> hexTypes;
     private final DynamicCachedObjectManager<PS2Outfit> outfits;
     private final DynamicUncachedObjectManager<PS2Player> players;
@@ -108,6 +113,11 @@ class PS2APIImpl implements IPS2API {
     private final StaticPS2ObjectRegistry<PS2ItemCategory> itemCategories;
     private final PS2ItemRegistry itemRegistry;
     private final StaticPS2ObjectRegistry<PS2CertificationLine> certificationLines;
+    private final StaticPS2ObjectRegistry<PS2Loadout> loadouts;
+    private final StaticPS2ObjectRegistry<PS2Achievement> achievements;
+    private final StaticPS2ObjectRegistry<PS2Weapon> weapons;
+    private final StaticPS2ObjectRegistry<PS2MetaGameEvent> metaGameEvents;
+    private final StaticPS2ObjectRegistry<PS2MetaGameEventState> metaGameStates;
 
     private boolean valid;
 
@@ -223,7 +233,7 @@ class PS2APIImpl implements IPS2API {
     }
 
     @Override
-    public IPS2ObjectRegistry<? extends IBase> getBases() {
+    public IPS2ObjectRegistry<? extends IFacility> getFacilities() {
         return returnObject(this.bases);
     }
 
@@ -287,6 +297,31 @@ class PS2APIImpl implements IPS2API {
         return returnObject(this.certificationLines);
     }
 
+    @Override
+    public IPS2ObjectRegistry<? extends ILoadout> getLoadouts() {
+        return returnObject(this.loadouts);
+    }
+
+    @Override
+    public IPS2ObjectRegistry<? extends IAchievement> getAchievements() {
+        return returnObject(this.achievements);
+    }
+
+    @Override
+    public IPS2ObjectRegistry<? extends IWeapon> getWeapons() {
+        return returnObject(this.weapons);
+    }
+
+    @Override
+    public IPS2ObjectRegistry<? extends IMetaGameEvent> getMetaGameEvents() {
+        return returnObject(this.metaGameEvents);
+    }
+
+    @Override
+    public IPS2ObjectRegistry<? extends IMetaGameEventState> getMetaGameEventState() {
+        return returnObject(this.metaGameStates);
+    }
+
     private void updateData(int minute) {
         if (minute == 0) {          //Every hour
             factions.update();
@@ -300,6 +335,11 @@ class PS2APIImpl implements IPS2API {
             itemCategories.update();
             itemRegistry.update();
             certificationLines.update();
+            loadouts.update();
+            achievements.update();
+            weapons.update();
+            metaGameEvents.update();
+            metaGameStates.update();
         }
         if (minute % 3 == 0) {      //Every 3 mins
             servers.update();

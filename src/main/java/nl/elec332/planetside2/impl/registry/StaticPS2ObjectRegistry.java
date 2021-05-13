@@ -3,7 +3,8 @@ package nl.elec332.planetside2.impl.registry;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import nl.elec332.planetside2.api.ICensusAPI;
-import nl.elec332.planetside2.api.registry.IPS2Object;
+import nl.elec332.planetside2.api.objects.registry.IPS2Object;
+import nl.elec332.planetside2.util.Constants;
 import nl.elec332.planetside2.util.NetworkUtil;
 
 import java.util.Map;
@@ -34,8 +35,6 @@ public class StaticPS2ObjectRegistry<T extends IPS2Object> extends AbstractPS2Ob
         this.deserializer = deserializer;
     }
 
-    private static final int LIMIT = 4750;
-
     private final ICensusAPI api;
     private final String type;
     private final String request;
@@ -54,14 +53,14 @@ public class StaticPS2ObjectRegistry<T extends IPS2Object> extends AbstractPS2Ob
         }
         int index = 0;
         while (index >= 0) {
-            JsonArray objects = api.invokeAPI(type, preRequest + "c:limit=" + LIMIT + "&" + request + "&c:start=" + index);
+            JsonArray objects = api.invokeAPI(type, preRequest + "c:limit=" + Constants.API_SAFE_RETURN_SIZE + "&" + request + "&c:start=" + index);
             for (int i = 0; i < objects.size(); i++) {
                 JsonObject jo = objects.get(i).getAsJsonObject();
                 T obj = deserializer.apply(jo);
                 map.put(obj.getId(), obj);
             }
-            if (objects.size() >= LIMIT) {
-                index += (LIMIT - 50);
+            if (objects.size() >= Constants.API_SAFE_RETURN_SIZE) {
+                index += (Constants.API_SAFE_RETURN_SIZE - 50);
             } else {
                 index = -1;
             }

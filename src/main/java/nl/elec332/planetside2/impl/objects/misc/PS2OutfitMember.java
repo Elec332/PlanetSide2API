@@ -1,9 +1,9 @@
 package nl.elec332.planetside2.impl.objects.misc;
 
 import com.google.gson.annotations.SerializedName;
-import nl.elec332.planetside2.api.player.IOutfit;
-import nl.elec332.planetside2.api.player.IOutfitMember;
-import nl.elec332.planetside2.api.registry.IPS2ObjectReference;
+import nl.elec332.planetside2.api.objects.player.IOutfit;
+import nl.elec332.planetside2.api.objects.player.IOutfitMember;
+import nl.elec332.planetside2.api.objects.registry.IPS2ObjectReference;
 
 import java.time.Instant;
 import java.util.Objects;

@@ -1,7 +1,7 @@
 package nl.elec332.planetside2.impl.objects.misc;
 
-import nl.elec332.planetside2.api.player.request.IFactionWeaponStat;
-import nl.elec332.planetside2.api.world.IFaction;
+import nl.elec332.planetside2.api.objects.player.request.IFactionWeaponStat;
+import nl.elec332.planetside2.api.objects.world.IFaction;
 
 import java.time.Instant;
 import java.util.Locale;

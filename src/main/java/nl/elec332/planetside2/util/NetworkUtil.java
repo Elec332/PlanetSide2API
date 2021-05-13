@@ -1,7 +1,10 @@
 package nl.elec332.planetside2.util;
 
 import com.google.gson.*;
-import nl.elec332.planetside2.api.registry.IPS2ObjectReference;
+import nl.elec332.planetside2.api.IPS2APIAccessor;
+import nl.elec332.planetside2.api.objects.registry.IPS2ObjectReference;
+import nl.elec332.planetside2.api.streaming.event.base.IStreamingEvent;
+import nl.elec332.planetside2.impl.PS2APIAccessor;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -11,6 +14,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.HashSet;
+import java.util.stream.Collectors;
 
 /**
  * Created by Elec332 on 23/04/2021
@@ -21,8 +25,13 @@ public class NetworkUtil {
             .setLenient()
             .setPrettyPrinting()
             .registerTypeAdapter(IPS2ObjectReference.class, new PS2ObjectDeserializer())
+            .registerTypeAdapter(IStreamingEvent.class, new StreamingEventDeserializer())
             .registerTypeAdapter(Instant.class, new TimeSecondDeserializer())
             .create();
+
+    public static IPS2APIAccessor getAPIAccessor() {
+        return PS2APIAccessor.INSTANCE;
+    }
 
     @SuppressWarnings("all")
     public static JsonObject readJsonFromURL(String url_, boolean flatten) {
@@ -42,7 +51,8 @@ public class NetworkUtil {
             InputStream is = url.openStream();
             try {
                 BufferedReader rd = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-                JsonObject o = GSON.fromJson(rd, JsonObject.class);
+                String s = rd.lines().collect(Collectors.joining("\n")).replace(":\"-\"", ":{}");
+                JsonObject o = GSON.fromJson(s, JsonObject.class);
                 if (flatten) {
                     flattenJsonSelectively(o);
                     //System.out.println(GSON.toJson(o));

@@ -1,6 +1,6 @@
 package nl.elec332.planetside2.impl.objects;
 
-import nl.elec332.planetside2.api.world.IHexType;
+import nl.elec332.planetside2.api.objects.world.IHexType;
 
 import java.util.Objects;
 

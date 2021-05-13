@@ -1,6 +1,6 @@
 package nl.elec332.planetside2.impl.objects;
 
-import nl.elec332.planetside2.api.player.IExperienceType;
+import nl.elec332.planetside2.api.objects.player.IExperienceType;
 
 import java.util.Objects;
 

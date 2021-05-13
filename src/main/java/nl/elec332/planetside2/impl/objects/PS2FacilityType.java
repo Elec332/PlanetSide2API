@@ -1,6 +1,6 @@
 package nl.elec332.planetside2.impl.objects;
 
-import nl.elec332.planetside2.api.world.IFacilityType;
+import nl.elec332.planetside2.api.objects.world.IFacilityType;
 
 import java.io.Serializable;
 import java.util.Objects;

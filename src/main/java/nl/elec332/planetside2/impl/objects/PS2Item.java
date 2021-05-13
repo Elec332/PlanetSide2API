@@ -1,12 +1,12 @@
 package nl.elec332.planetside2.impl.objects;
 
 import com.google.gson.annotations.SerializedName;
-import nl.elec332.planetside2.api.registry.IPS2ObjectReference;
-import nl.elec332.planetside2.api.weapons.ICertificationLine;
-import nl.elec332.planetside2.api.weapons.IItem;
-import nl.elec332.planetside2.api.weapons.IItemCategory;
-import nl.elec332.planetside2.api.weapons.IItemType;
-import nl.elec332.planetside2.api.world.IFaction;
+import nl.elec332.planetside2.api.objects.registry.IPS2ObjectReference;
+import nl.elec332.planetside2.api.objects.weapons.ICertificationLine;
+import nl.elec332.planetside2.api.objects.weapons.IItem;
+import nl.elec332.planetside2.api.objects.weapons.IItemCategory;
+import nl.elec332.planetside2.api.objects.weapons.IItemType;
+import nl.elec332.planetside2.api.objects.world.IFaction;
 
 import java.util.Objects;
 import java.util.UUID;

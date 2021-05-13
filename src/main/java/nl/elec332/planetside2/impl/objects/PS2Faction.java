@@ -1,7 +1,7 @@
 package nl.elec332.planetside2.impl.objects;
 
 import com.google.gson.annotations.SerializedName;
-import nl.elec332.planetside2.api.world.IFaction;
+import nl.elec332.planetside2.api.objects.world.IFaction;
 
 import java.io.Serializable;
 import java.util.Objects;

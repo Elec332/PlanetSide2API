@@ -1,7 +1,7 @@
 package nl.elec332.planetside2.impl.objects;
 
 import com.google.gson.annotations.SerializedName;
-import nl.elec332.planetside2.api.weapons.ICertificationLine;
+import nl.elec332.planetside2.api.objects.weapons.ICertificationLine;
 
 import java.util.Objects;
 import java.util.UUID;

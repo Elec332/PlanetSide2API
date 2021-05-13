@@ -1,8 +1,8 @@
 package nl.elec332.planetside2.impl.objects.misc;
 
-import nl.elec332.planetside2.api.registry.IPS2ObjectReference;
-import nl.elec332.planetside2.api.world.IHexType;
-import nl.elec332.planetside2.api.world.IMapHex;
+import nl.elec332.planetside2.api.objects.registry.IPS2ObjectReference;
+import nl.elec332.planetside2.api.objects.world.IHexType;
+import nl.elec332.planetside2.api.objects.world.IMapHex;
 
 import java.io.Serializable;
 import java.util.Objects;

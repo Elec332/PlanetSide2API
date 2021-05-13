@@ -4,8 +4,8 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
-import nl.elec332.planetside2.api.registry.IPS2Object;
-import nl.elec332.planetside2.api.registry.IPS2ObjectReference;
+import nl.elec332.planetside2.api.objects.registry.IPS2Object;
+import nl.elec332.planetside2.api.objects.registry.IPS2ObjectReference;
 import nl.elec332.planetside2.impl.PS2APIAccessor;
 
 import java.lang.reflect.ParameterizedType;

@@ -1,7 +1,7 @@
 package nl.elec332.planetside2.impl.objects;
 
 import com.google.gson.annotations.SerializedName;
-import nl.elec332.planetside2.api.weapons.IItemCategory;
+import nl.elec332.planetside2.api.objects.weapons.IItemCategory;
 
 import java.util.Collections;
 import java.util.Objects;

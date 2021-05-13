@@ -1,7 +1,9 @@
 package nl.elec332.planetside2.util;
 
-import nl.elec332.planetside2.api.IPS2API;
-import nl.elec332.planetside2.api.misc.IItemSet;
+import nl.elec332.planetside2.api.objects.IPS2API;
+import nl.elec332.planetside2.api.objects.misc.IItemSet;
+import nl.elec332.planetside2.api.objects.registry.IPS2ObjectReference;
+import nl.elec332.planetside2.api.objects.weapons.IItem;
 import nl.elec332.planetside2.impl.PS2APIAccessor;
 
 /**
@@ -10,6 +12,8 @@ import nl.elec332.planetside2.impl.PS2APIAccessor;
 public class PS2ItemSets {
 
     private static final IPS2API API = PS2APIAccessor.INSTANCE.getAPI();
+
+    public static final IPS2ObjectReference<? extends IItem> BASTION = API.getItems().getReference(API.getItems().getByName("BASTION").getId());
 
     public static final IItemSet TR_AA_NOSE_GUNS = API.getItemCategories().getByName("Mosquito Nose Cannon");
     public static final IItemSet NC_AA_NOSE_GUNS = API.getItemCategories().getByName("Scythe Nose Cannon");

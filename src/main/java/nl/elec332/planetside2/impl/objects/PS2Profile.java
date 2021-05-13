@@ -1,10 +1,10 @@
 package nl.elec332.planetside2.impl.objects;
 
 import com.google.gson.annotations.SerializedName;
-import nl.elec332.planetside2.api.player.IPlayerClass;
-import nl.elec332.planetside2.api.player.IPlayerProfile;
-import nl.elec332.planetside2.api.registry.IPS2ObjectReference;
-import nl.elec332.planetside2.api.world.IFaction;
+import nl.elec332.planetside2.api.objects.player.IPlayerClass;
+import nl.elec332.planetside2.api.objects.player.IPlayerProfile;
+import nl.elec332.planetside2.api.objects.registry.IPS2ObjectReference;
+import nl.elec332.planetside2.api.objects.world.IFaction;
 
 import java.util.Objects;
 

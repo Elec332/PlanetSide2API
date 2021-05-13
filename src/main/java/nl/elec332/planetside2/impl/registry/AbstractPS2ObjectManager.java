@@ -1,7 +1,7 @@
 package nl.elec332.planetside2.impl.registry;
 
-import nl.elec332.planetside2.api.registry.IPS2Object;
-import nl.elec332.planetside2.api.registry.IPS2ObjectManager;
+import nl.elec332.planetside2.api.objects.registry.IPS2Object;
+import nl.elec332.planetside2.api.objects.registry.IPS2ObjectManager;
 import nl.elec332.planetside2.impl.AbstractPS2ObjectReference;
 
 /**

@@ -1,10 +1,10 @@
 package nl.elec332.planetside2.impl;
 
 import nl.elec332.planetside2.api.ICensusAPI;
-import nl.elec332.planetside2.api.registry.IPS2ItemRegistry;
-import nl.elec332.planetside2.api.registry.IPS2ObjectRegistry;
-import nl.elec332.planetside2.api.weapons.IItemType;
-import nl.elec332.planetside2.api.world.IFaction;
+import nl.elec332.planetside2.api.objects.registry.IPS2ItemRegistry;
+import nl.elec332.planetside2.api.objects.registry.IPS2ObjectRegistry;
+import nl.elec332.planetside2.api.objects.weapons.IItemType;
+import nl.elec332.planetside2.api.objects.world.IFaction;
 import nl.elec332.planetside2.impl.objects.PS2Item;
 import nl.elec332.planetside2.impl.registry.StaticPS2ObjectRegistry;
 

@@ -1,8 +1,8 @@
 package nl.elec332.planetside2.impl.registry;
 
-import nl.elec332.planetside2.api.registry.IPS2Object;
-import nl.elec332.planetside2.api.registry.IPS2ObjectReference;
-import nl.elec332.planetside2.api.registry.IPS2ObjectRegistry;
+import nl.elec332.planetside2.api.objects.registry.IPS2Object;
+import nl.elec332.planetside2.api.objects.registry.IPS2ObjectReference;
+import nl.elec332.planetside2.api.objects.registry.IPS2ObjectRegistry;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -65,7 +65,7 @@ public abstract class AbstractPS2ObjectRegistry<T extends IPS2Object> extends Ab
 
     @Override
     public IPS2ObjectReference<T> getReference(long id) {
-        return this.objectRefs.get(id);
+        return this.objectRefs.computeIfAbsent(id, CachedRef::new);
     }
 
     @Override

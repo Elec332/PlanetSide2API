@@ -1,6 +1,6 @@
 package nl.elec332.planetside2.impl.objects.misc;
 
-import nl.elec332.planetside2.api.player.request.ICharacterStatHistory;
+import nl.elec332.planetside2.api.objects.player.request.ICharacterStatHistory;
 
 import java.util.Map;
 

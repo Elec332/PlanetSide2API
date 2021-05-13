@@ -1,9 +1,17 @@
 package nl.elec332.planetside2.util.census;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 import nl.elec332.planetside2.api.ICensusAPI;
+import nl.elec332.planetside2.util.Constants;
 import nl.elec332.planetside2.util.NetworkUtil;
+
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 
 /**
@@ -31,10 +39,23 @@ public class CensusAPI implements ICensusAPI {
     }
 
     @Override
+    public <T> Stream<T> invokeAPI(String root, String command, Class<T> type) {
+        return invokeAPI(root, command, o -> NetworkUtil.GSON.fromJson(o, type));
+    }
+
+    @Override
+    public <T> Stream<T> invokeAPI(String root, String command, Function<JsonElement, T> deserializer) {
+        return StreamSupport.stream(invokeAPI(root, command).spliterator(), false).map(deserializer);
+    }
+
+    @Override
     public JsonObject requestSingleObject(String root, String command) {
         JsonArray data = checkAPI(invokeAPI_(root, command));
         if (data.size() == 1) {
             return data.get(0).getAsJsonObject();
+        }
+        if (data.size() == 0) {
+            return null;
         }
         throw new UnsupportedOperationException("Returned object count is " + data.size());
     }
@@ -49,7 +70,7 @@ public class CensusAPI implements ICensusAPI {
         if (jo.has(RETURNED)) {
             int len = jo.get(RETURNED).getAsInt();
             JsonArray ret = jo.getAsJsonArray(jo.keySet().stream().filter(s -> !s.equals(RETURNED)).findFirst().orElseThrow(NullPointerException::new));
-            if (len >= 5000) {
+            if (len >= Constants.API_MAX_RETURN_SIZE) {
                 throw new RuntimeException("API return information was incomplete! (above the max of 5000 values)");
             }
             if (len == ret.size()) {

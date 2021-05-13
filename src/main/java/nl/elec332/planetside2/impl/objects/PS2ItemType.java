@@ -1,6 +1,6 @@
 package nl.elec332.planetside2.impl.objects;
 
-import nl.elec332.planetside2.api.weapons.IItemType;
+import nl.elec332.planetside2.api.objects.weapons.IItemType;
 
 import java.util.Collections;
 import java.util.Objects;
