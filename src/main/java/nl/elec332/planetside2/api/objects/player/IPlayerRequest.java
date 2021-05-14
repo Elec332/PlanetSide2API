@@ -3,6 +3,7 @@ package nl.elec332.planetside2.api.objects.player;
 import nl.elec332.planetside2.api.objects.world.IFaction;
 
 import java.util.Collection;
+import java.util.stream.Stream;
 
 /**
  * Created by Elec332 on 26/04/2021
@@ -19,6 +20,8 @@ public interface IPlayerRequest<R> {
 
     R getFirstResponse();
 
-    R getResponseByName(String name);
+    Stream<R> getResponseByName(String name);
+
+    R getFirstResponseByName(String name);
 
 }

@@ -9,6 +9,8 @@ public interface IOutfitMember {
 
     long getPlayerId();
 
+    String getPlayerName();
+
     IOutfit getOutfit();
 
     Instant getLastPlayerActivity();

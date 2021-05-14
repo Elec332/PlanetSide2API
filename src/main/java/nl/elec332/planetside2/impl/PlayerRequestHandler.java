@@ -5,21 +5,25 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import nl.elec332.planetside2.api.ICensusAPI;
 import nl.elec332.planetside2.api.objects.IPlayerRequestHandler;
+import nl.elec332.planetside2.api.objects.misc.IItemSet;
 import nl.elec332.planetside2.api.objects.player.IPlayerRequest;
 import nl.elec332.planetside2.api.objects.player.IPlayerResponseList;
 import nl.elec332.planetside2.api.objects.player.request.ICharacterStat;
 import nl.elec332.planetside2.api.objects.player.request.ICharacterStatHistory;
+import nl.elec332.planetside2.api.objects.player.request.IFactionWeaponStat;
 import nl.elec332.planetside2.api.objects.player.request.IStat;
 import nl.elec332.planetside2.api.objects.registry.IPS2ObjectReference;
 import nl.elec332.planetside2.api.objects.world.IFaction;
 import nl.elec332.planetside2.impl.objects.misc.PS2CharacterStat;
 import nl.elec332.planetside2.impl.objects.misc.PS2CharacterStatHistory;
+import nl.elec332.planetside2.impl.objects.misc.PS2FactionWeaponStat;
 import nl.elec332.planetside2.util.census.CensusRequestBuilder;
 import nl.elec332.planetside2.util.NetworkUtil;
 
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by Elec332 on 26/04/2021
@@ -31,6 +35,23 @@ public class PlayerRequestHandler implements IPlayerRequestHandler {
     }
 
     private final ICensusAPI api;
+
+    @Override
+    public IPlayerResponseList<IFactionWeaponStat> getSlimCharacterWeaponStats(Collection<Long> players, IItemSet itemSet) {
+        return getCharacterWeaponStats(players, itemSet, "weapon_kills",  "weapon_killed_by", "weapon_vehicle_kills");
+    }
+
+    @Override
+    public IPlayerResponseList<IFactionWeaponStat> getCharacterWeaponStats(Collection<Long> players, IItemSet itemSet, String... stats) {
+        return getStats(players, "characters_weapon_stat_by_faction", j -> {
+            j.hide("character_id", "last_save_date");
+            if (itemSet != null) {
+                j.terms(c -> itemSet.getItems().forEach(i -> {
+                    c.accept("item_id", i);
+                }));
+            }
+        }, PS2FactionWeaponStat.class, stats);
+    }
 
     @Override
     public IPlayerResponseList<ICharacterStat> getCharacterStats(Collection<Long> players, String... stats) {
@@ -71,8 +92,6 @@ public class PlayerRequestHandler implements IPlayerRequestHandler {
     private <R, T extends R> List<IPlayerRequest<R>> makeRequest(Collection<Long> ids, String join, Consumer<CensusRequestBuilder.JoinBuilder> builder, boolean exploded, Class<T> response) {
         String inject = "result" + (exploded ? "_full" : "");
         JsonArray players = makeRequest(ids, join, builder, inject);
-//        System.out.println(NetworkUtil.GSON.toJson(players));
-//        System.exit(0);
         List<IPlayerRequest<R>> ret = new ArrayList<>();
         for (int i = 0; i < players.size(); i++) {
             List<R> resp = new ArrayList<>();
@@ -88,7 +107,6 @@ public class PlayerRequestHandler implements IPlayerRequestHandler {
                 }
             } else {
                 throw new UnsupportedOperationException();
-                //resp.add(NetworkUtil.GSON.fromJson(je, response));
             }
             ret.add(new Response<>(jo.get("character_id").getAsLong(), jo.get("name.first").getAsString(), jo.get("faction_id").getAsInt(), resp));
         }
@@ -125,22 +143,19 @@ public class PlayerRequestHandler implements IPlayerRequestHandler {
 
     private static class Response<T> implements IPlayerRequest<T> {
 
-        @SuppressWarnings("unchecked")
         private Response(long playerId, String playerName, int faction, List<T> response) {
             this.playerId = playerId;
             this.playerName = playerName;
             this.response = Collections.unmodifiableList(response);
             this.faction = PS2APIAccessor.INSTANCE.getAPI().getFactions().getReference(faction);
-            this.namedResponse = this.response.iterator().next() instanceof IStat ?
-                    this.response.stream().map(t -> (IStat) t).collect(Collectors.toMap(IStat::getStatName, t -> (T) t))
-                    : null;
+            this.named = this.response.iterator().next() instanceof IStat;
         }
 
         private final long playerId;
         private final String playerName;
         private final IPS2ObjectReference<? extends IFaction> faction;
         private final List<T> response;
-        private final Map<String, T> namedResponse;
+        private final boolean named;
 
         @Override
         public long getPlayerId() {
@@ -168,8 +183,13 @@ public class PlayerRequestHandler implements IPlayerRequestHandler {
         }
 
         @Override
-        public T getResponseByName(String name) {
-            return this.namedResponse == null ? null : this.namedResponse.get(name);
+        public Stream<T> getResponseByName(String name) {
+            return named ? response.stream().filter(t -> name.equalsIgnoreCase(((IStat) t).getStatName())) : null;
+        }
+
+        @Override
+        public T getFirstResponseByName(String name) {
+            return getResponseByName(name).findFirst().orElse(null);
         }
 
         @Override

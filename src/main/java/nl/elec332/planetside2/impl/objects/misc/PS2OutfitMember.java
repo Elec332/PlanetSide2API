@@ -15,6 +15,8 @@ public class PS2OutfitMember implements IOutfitMember {
 
     @SerializedName("character_id")
     private long character;
+    @SerializedName("name.first")
+    private String name;
     @SerializedName("times.last_save")
     private Instant activity;
     @SerializedName("outfit_info.outfit_id")
@@ -27,6 +29,11 @@ public class PS2OutfitMember implements IOutfitMember {
     @Override
     public long getPlayerId() {
         return this.character;
+    }
+
+    @Override
+    public String getPlayerName() {
+        return this.name;
     }
 
     @Override
@@ -55,19 +62,21 @@ public class PS2OutfitMember implements IOutfitMember {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PS2OutfitMember that = (PS2OutfitMember) o;
-        return character == that.character && rank == that.rank && Objects.equals(activity, that.activity) && Objects.equals(joined, that.joined);
+        return character == that.character && rank == that.rank && Objects.equals(name, that.name) && Objects.equals(activity, that.activity) && Objects.equals(outfit.getId(), that.outfit.getId()) && Objects.equals(joined, that.joined);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(character, activity, joined, rank);
+        return Objects.hash(character, name, activity, outfit, joined, rank);
     }
 
     @Override
     public String toString() {
         return "PS2OutfitMember{" +
                 "character=" + character +
+                ", name='" + name + '\'' +
                 ", activity=" + activity +
+                ", outfit=" + outfit.getObject().getName() +
                 ", joined=" + joined +
                 ", rank=" + rank +
                 '}';

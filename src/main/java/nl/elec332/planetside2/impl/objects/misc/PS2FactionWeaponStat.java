@@ -51,13 +51,13 @@ public class PS2FactionWeaponStat implements IFactionWeaponStat {
     public int getEnemyKills(IFaction playerFaction) {
         String tag = playerFaction.getTag().toLowerCase(Locale.ROOT);
         if (tag.equals("vs")) {
-            return getVSValue();
+            return getTotal() - getVSValue();
         }
         if (tag.equals("nc")) {
-            return getNCValue();
+            return getTotal() - getNCValue();
         }
         if (tag.equals("tr")) {
-            return getTRValue();
+            return getTotal() - getTRValue();
         }
         return 0;
     }
