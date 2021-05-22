@@ -7,14 +7,18 @@ import nl.elec332.planetside2.api.objects.player.IPlayer;
 import nl.elec332.planetside2.api.objects.registry.IPS2ObjectReference;
 import nl.elec332.planetside2.api.objects.world.IFaction;
 import nl.elec332.planetside2.api.objects.world.IServer;
+import nl.elec332.planetside2.impl.PS2APIAccessor;
 import nl.elec332.planetside2.impl.objects.misc.PS2OutfitMember;
+import nl.elec332.planetside2.util.NetworkUtil;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by Elec332 on 23/04/2021
@@ -85,6 +89,19 @@ public class PS2Outfit implements IOutfit {
     }
 
     @Override
+    public Stream<IOutfitMember> getOnlineMembers() {
+        OnlineStatus status = NetworkUtil.GSON.fromJson(PS2APIAccessor.INSTANCE.getCensusAPI().requestSingleObject("outfit", "outfit_id=" + outfit_id + "&c:join=outfit_member^list:1^inject_at:member_map^show:character_id(characters_online_status^on:character_id^inject_at:online^show:online_status)&c:tree=start:member_map^field:character_id"), OnlineStatus.class);
+        return this.getOutfitMemberInfo().stream().filter(m -> status.member_map.get(m.getPlayerId()) > 0);
+    }
+
+    private static class OnlineStatus implements Serializable {
+
+        @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
+        Map<Long, Integer> member_map;
+
+    }
+
+    @Override
     public Collection<Long> getPlayerIds(Predicate<IOutfitMember> filter) {
         return this.member_map.values().stream()
                 .filter(filter)
@@ -94,7 +111,11 @@ public class PS2Outfit implements IOutfit {
 
     @Override
     public Collection<IPlayer> getPlayers(Predicate<IOutfitMember> filter) {
-        return null;
+        return this.member_map.values().stream()
+                .filter(filter)
+                .map(PS2OutfitMember::getPlayerId)
+                .map(PS2APIAccessor.INSTANCE.getAPI().getPlayerManager()::get)
+                .collect(Collectors.toList());
     }
 
     //Auto-generated

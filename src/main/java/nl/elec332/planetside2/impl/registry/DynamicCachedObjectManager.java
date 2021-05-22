@@ -53,7 +53,7 @@ public class DynamicCachedObjectManager<T extends IPS2Object> extends AbstractDy
 
     @Override
     public T getCached(long id) {
-        if (id == 0) {
+        if (id <= 0) {
             return null;
         }
         T ret = this.objects.get(id);

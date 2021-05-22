@@ -1,16 +1,16 @@
 package nl.elec332.planetside2.impl;
 
 import nl.elec332.planetside2.api.ICensusAPI;
-import nl.elec332.planetside2.api.objects.IPS2API;
 import nl.elec332.planetside2.api.IPS2APIAccessor;
+import nl.elec332.planetside2.api.objects.IPS2API;
 import nl.elec332.planetside2.api.objects.registry.IPS2Object;
 import nl.elec332.planetside2.api.objects.registry.IPS2ObjectManager;
 import nl.elec332.planetside2.api.streaming.IStreamEventPoller;
 import nl.elec332.planetside2.api.streaming.IStreamingService;
 import nl.elec332.planetside2.api.streaming.request.IEventServiceFactory;
-import nl.elec332.planetside2.impl.streaming.request.EventServiceFactory;
 import nl.elec332.planetside2.impl.streaming.PS2StreamEventPoller;
 import nl.elec332.planetside2.impl.streaming.PS2StreamingService;
+import nl.elec332.planetside2.impl.streaming.request.EventServiceFactory;
 import nl.elec332.planetside2.util.census.CensusAPI;
 
 import java.util.HashSet;

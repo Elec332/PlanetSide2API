@@ -8,6 +8,7 @@ import nl.elec332.planetside2.api.objects.world.IServer;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 /**
  * Created by Elec332 on 23/04/2021
@@ -35,6 +36,8 @@ public interface IOutfit extends IPS2Object {
     Collection<IOutfitMember> getOutfitMemberInfo();
 
     IOutfitMember getMemberInfo(long playerId);
+
+    Stream<IOutfitMember> getOnlineMembers();
 
     Collection<Long> getPlayerIds(Predicate<IOutfitMember> filter);
 

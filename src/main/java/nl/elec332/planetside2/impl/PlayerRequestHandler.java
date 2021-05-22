@@ -38,7 +38,7 @@ public class PlayerRequestHandler implements IPlayerRequestHandler {
 
     @Override
     public IPlayerResponseList<IFactionWeaponStat> getSlimCharacterWeaponStats(Collection<Long> players, IItemSet itemSet) {
-        return getCharacterWeaponStats(players, itemSet, "weapon_kills",  "weapon_killed_by", "weapon_vehicle_kills");
+        return getCharacterWeaponStats(players, itemSet, "weapon_kills", "weapon_killed_by", "weapon_vehicle_kills");
     }
 
     @Override

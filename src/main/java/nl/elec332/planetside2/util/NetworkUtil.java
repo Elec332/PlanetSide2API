@@ -120,16 +120,23 @@ public class NetworkUtil {
     private static void squashMap(JsonObject object) {
         for (String s : object.keySet()) {
             JsonElement je = object.get(s);
-            boolean b = false;
             if (je.isJsonObject()) {
                 JsonObject jo = je.getAsJsonObject();
-                if (jo.keySet().size() == 1) {
-                    object.add(s, jo.get(jo.keySet().iterator().next()));
-                    b = true;
-                }
+                object.add(s, squashObject(jo));
             }
             flattenJsonSelectively(je);
         }
+    }
+
+    private static JsonElement squashObject(JsonObject jo) {
+        if (jo.keySet().size() == 1) {
+            JsonElement e = jo.get(jo.keySet().iterator().next());
+            if (e.isJsonObject()) {
+                return squashObject(e.getAsJsonObject());
+            }
+            return e;
+        }
+        return jo;
     }
 
     public static String toURLString(String s) {
