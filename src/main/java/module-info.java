@@ -3,7 +3,7 @@
  */
 module nl.elec332.planetside2api {
 
-    requires com.google.gson;
+    requires transitive com.google.gson;
 
     opens nl.elec332.planetside2.impl.objects to com.google.gson;
     opens nl.elec332.planetside2.impl.objects.misc to com.google.gson;

@@ -7,6 +7,7 @@ import nl.elec332.planetside2.api.objects.world.IServer;
 
 import java.time.Instant;
 import java.util.Collection;
+import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -38,6 +39,8 @@ public interface IOutfit extends IPS2Object {
     IOutfitMember getMemberInfo(long playerId);
 
     Stream<IOutfitMember> getOnlineMembers();
+
+    Stream<Map.Entry<IOutfitMember, IServer>> getOnlineMemberServers();
 
     Collection<Long> getPlayerIds(Predicate<IOutfitMember> filter);
 

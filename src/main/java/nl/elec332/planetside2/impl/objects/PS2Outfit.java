@@ -13,6 +13,7 @@ import nl.elec332.planetside2.util.NetworkUtil;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
@@ -89,9 +90,21 @@ public class PS2Outfit implements IOutfit {
     }
 
     @Override
+    public Stream<Map.Entry<IOutfitMember, IServer>> getOnlineMemberServers() {
+        OnlineStatus status = getOnlineStatus();
+        return this.getOutfitMemberInfo().stream()
+                .filter(m -> status.member_map.get(m.getPlayerId()) > 0)
+                .map(m -> new AbstractMap.SimpleEntry<>(m, PS2APIAccessor.INSTANCE.getAPI().getServers().get(status.member_map.get(m.getPlayerId()))));
+    }
+
+    @Override
     public Stream<IOutfitMember> getOnlineMembers() {
-        OnlineStatus status = NetworkUtil.GSON.fromJson(PS2APIAccessor.INSTANCE.getCensusAPI().requestSingleObject("outfit", "outfit_id=" + outfit_id + "&c:join=outfit_member^list:1^inject_at:member_map^show:character_id(characters_online_status^on:character_id^inject_at:online^show:online_status)&c:tree=start:member_map^field:character_id"), OnlineStatus.class);
+        OnlineStatus status = getOnlineStatus();
         return this.getOutfitMemberInfo().stream().filter(m -> status.member_map.get(m.getPlayerId()) > 0);
+    }
+
+    private OnlineStatus getOnlineStatus() {
+        return NetworkUtil.GSON.fromJson(PS2APIAccessor.INSTANCE.getCensusAPI().requestSingleObject("outfit", "outfit_id=" + outfit_id + "&c:join=outfit_member^list:1^inject_at:member_map^show:character_id(characters_online_status^on:character_id^inject_at:online^show:online_status)&c:tree=start:member_map^field:character_id"), OnlineStatus.class);
     }
 
     private static class OnlineStatus implements Serializable {
