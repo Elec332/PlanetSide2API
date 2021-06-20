@@ -36,8 +36,10 @@ public abstract class AbstractPS2ObjectRegistry<T extends IPS2Object> extends Ab
         this.objects = new TreeMap<>();
         newMap.accept(this.objects);
 
-        this.objectRefs.values().forEach(CachedRef::clear);
-        this.objects.forEach((i, t) -> this.objectRefs.computeIfAbsent(i, CachedRef::new));
+        synchronized (objectRefs) {
+            this.objectRefs.values().forEach(CachedRef::clear);
+            this.objects.forEach((i, t) -> this.objectRefs.computeIfAbsent(i, CachedRef::new));
+        }
 
         this.objectNames.clear();
         this.objects.values().forEach(o -> this.objectNames.put(o.getName().toLowerCase(Locale.ROOT), o));
@@ -47,10 +49,13 @@ public abstract class AbstractPS2ObjectRegistry<T extends IPS2Object> extends Ab
         }
 
         this.objects.forEach((i, t) -> this.changeListener.accept(oldMap.remove(i), t));
-        oldMap.forEach((i, t) -> {
-            this.changeListener.accept(t, null);
-            this.objectRefs.remove(t.getId());
-        });
+
+        synchronized (objectRefs) {
+            oldMap.forEach((i, t) -> {
+                this.changeListener.accept(t, null);
+                this.objectRefs.remove(t.getId());
+            });
+        }
     }
 
     @Override
@@ -65,7 +70,9 @@ public abstract class AbstractPS2ObjectRegistry<T extends IPS2Object> extends Ab
 
     @Override
     public IPS2ObjectReference<T> getReference(long id) {
-        return this.objectRefs.computeIfAbsent(id, CachedRef::new);
+        synchronized (objectRefs) {
+            return this.objectRefs.computeIfAbsent(id, CachedRef::new);
+        }
     }
 
     @Override
