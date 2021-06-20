@@ -25,14 +25,14 @@ final class PS2ObjectDeserializer implements JsonDeserializer<IPS2ObjectReferenc
                 m = PS2APIAccessor.getManagerEarly((Class<IPS2Object>) t);
             } else if (t instanceof WildcardType) {
                 m = null;
-                for (Type t2  : ((WildcardType) t).getLowerBounds()) {
+                for (Type t2 : ((WildcardType) t).getLowerBounds()) {
                     if (t2 instanceof Class) {
                         m = PS2APIAccessor.getManagerEarly((Class<IPS2Object>) t2);
                         break;
                     }
                 }
                 if (m == null) {
-                    for (Type t2  : ((WildcardType) t).getUpperBounds()) {
+                    for (Type t2 : ((WildcardType) t).getUpperBounds()) {
                         if (t2 instanceof Class) {
                             m = PS2APIAccessor.getManagerEarly((Class<IPS2Object>) t2);
                         }

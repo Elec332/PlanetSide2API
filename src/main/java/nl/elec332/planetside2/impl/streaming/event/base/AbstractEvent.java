@@ -13,13 +13,14 @@ import java.time.Instant;
 public abstract class AbstractEvent implements IStreamingEvent {
 
     private String event_name;
+    private String event_type;
     private Instant timestamp;
     private IPS2ObjectReference<IServer> world_id;
     private IPS2ObjectReference<IContinent> zone_id;
 
     @Override
     public String getEventName() {
-        return this.event_name;
+        return this.event_name == null ? event_type : event_name; //event_type when polling, event_name in streaming API...
     }
 
     @Override

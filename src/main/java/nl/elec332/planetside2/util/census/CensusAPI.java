@@ -3,12 +3,10 @@ package nl.elec332.planetside2.util.census;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
 import nl.elec332.planetside2.api.ICensusAPI;
 import nl.elec332.planetside2.util.Constants;
 import nl.elec332.planetside2.util.NetworkUtil;
 
-import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;

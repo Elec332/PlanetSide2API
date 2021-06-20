@@ -30,7 +30,8 @@ public class PS2StreamEventPoller implements IStreamEventPoller {
         long time = event.getTimeStamp().getEpochSecond();
         return api.invokeAPI("event", "type=FACILITY_CHARACTER&c:limit=10000&after=" + (time - 1) + "&before=" + (time + 1), IStreamingEvent.class)
                 .map(e -> (IPlayerFacilityEvent) e)
-                .filter(e -> e.getFacility().getId() == event.getFacility().getId())
+                .filter(e -> e.getContinent() != null && e.getContinent().getId() == event.getContinent().getId())
+                .filter(e -> e.getFacility() != null && e.getFacility().getId() == event.getFacility().getId())
                 .collect(Collectors.toList());
     }
 

@@ -169,6 +169,7 @@ class PS2APIImpl implements IPS2API {
                         counter %= 60;
                         updateData(counter);
                     } catch (Exception e) {
+                        System.out.println("UpdateFail");
                         e.printStackTrace();
                     }
                 }

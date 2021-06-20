@@ -13,10 +13,7 @@ import nl.elec332.planetside2.util.NetworkUtil;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.AbstractMap;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -37,6 +34,22 @@ public class PS2Outfit implements IOutfit {
     private IPS2ObjectReference<IServer> world;
     private Map<Integer, String> rank_map;
     private Map<Long, PS2OutfitMember> member_map;
+    private transient boolean membersFiltered = false;
+
+    private Map<Long, PS2OutfitMember> getMemberMap() {
+        if (!membersFiltered) {
+            for (long l : new HashSet<>(member_map.keySet())) {
+                PS2OutfitMember m = member_map.get(l);
+                if (m == null || m.getPlayerId() == 0) {
+                    member_map.remove(l);
+                }
+            }
+            member_map.remove(null);
+            member_map.remove(0L);
+            membersFiltered = true;
+        }
+        return member_map;
+    }
 
     @Override
     public long getId() {
@@ -81,12 +94,12 @@ public class PS2Outfit implements IOutfit {
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Collection<IOutfitMember> getOutfitMemberInfo() {
-        return (Collection) this.member_map.values();
+        return (Collection) this.getMemberMap().values();
     }
 
     @Override
     public IOutfitMember getMemberInfo(long playerId) {
-        return this.member_map.get(playerId);
+        return this.getMemberMap().get(playerId);
     }
 
     @Override
@@ -100,7 +113,24 @@ public class PS2Outfit implements IOutfit {
     @Override
     public Stream<IOutfitMember> getOnlineMembers() {
         OnlineStatus status = getOnlineStatus();
-        return this.getOutfitMemberInfo().stream().filter(m -> status.member_map.get(m.getPlayerId()) > 0);
+        try {
+            return this.getOutfitMemberInfo()
+                    .stream()
+                    .filter(m -> {
+                        Integer r = status.member_map.get(m.getPlayerId());
+                        return r != null && r > 0;
+                    });
+        } catch (Exception e) {
+            System.out.println(status);
+            System.out.println(status.member_map);
+            System.out.println(this.getOutfitMemberInfo());
+            System.out.println(this.getOutfitMemberInfo()
+                    .stream()
+                    .filter(Objects::nonNull)
+                    .filter(m -> status.member_map.get(m.getPlayerId()) > 0)
+                    .collect(Collectors.toList()));
+            throw new RuntimeException(e);
+        }
     }
 
     private OnlineStatus getOnlineStatus() {
@@ -116,7 +146,7 @@ public class PS2Outfit implements IOutfit {
 
     @Override
     public Collection<Long> getPlayerIds(Predicate<IOutfitMember> filter) {
-        return this.member_map.values().stream()
+        return this.getMemberMap().values().stream()
                 .filter(filter)
                 .map(PS2OutfitMember::getPlayerId)
                 .collect(Collectors.toList());
@@ -124,7 +154,7 @@ public class PS2Outfit implements IOutfit {
 
     @Override
     public Collection<IPlayer> getPlayers(Predicate<IOutfitMember> filter) {
-        return this.member_map.values().stream()
+        return this.getMemberMap().values().stream()
                 .filter(filter)
                 .map(PS2OutfitMember::getPlayerId)
                 .map(PS2APIAccessor.INSTANCE.getAPI().getPlayerManager()::get)
@@ -137,12 +167,12 @@ public class PS2Outfit implements IOutfit {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PS2Outfit ps2Outfit = (PS2Outfit) o;
-        return outfit_id == ps2Outfit.outfit_id && member_count == ps2Outfit.member_count && Objects.equals(name, ps2Outfit.name) && Objects.equals(alias, ps2Outfit.alias) && Objects.equals(time_created, ps2Outfit.time_created) && Objects.equals(faction, ps2Outfit.faction) && Objects.equals(world, ps2Outfit.world) && Objects.equals(rank_map, ps2Outfit.rank_map) && Objects.equals(member_map, ps2Outfit.member_map);
+        return outfit_id == ps2Outfit.outfit_id && member_count == ps2Outfit.member_count && Objects.equals(name, ps2Outfit.name) && Objects.equals(alias, ps2Outfit.alias) && Objects.equals(time_created, ps2Outfit.time_created) && Objects.equals(faction, ps2Outfit.faction) && Objects.equals(world, ps2Outfit.world) && Objects.equals(rank_map, ps2Outfit.rank_map) && Objects.equals(getMemberMap(), ps2Outfit.getMemberMap());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(outfit_id, name, alias, time_created, member_count, faction, world, rank_map, member_map);
+        return Objects.hash(outfit_id, name, alias, time_created, member_count, faction, world, rank_map, getMemberMap());
     }
 
     @Override
@@ -156,7 +186,7 @@ public class PS2Outfit implements IOutfit {
                 ", faction=" + faction +
                 ", world=" + world +
                 ", rank_map=" + rank_map +
-                ", member_map=" + member_map +
+                ", member_map=" + getMemberMap() +
                 '}';
     }
 
