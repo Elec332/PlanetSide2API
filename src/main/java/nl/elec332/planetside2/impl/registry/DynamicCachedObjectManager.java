@@ -40,15 +40,17 @@ public class DynamicCachedObjectManager<T extends IPS2Object> extends AbstractDy
     protected void updateMap(Consumer<Map<Long, T>> newMap) {
         Map<Long, T> oldMap = this.objects;
         this.objects = new TreeMap<>();
-        newMap.accept(this.objects);
+        synchronized (objectRefs) {
 
-        this.objectRefs.values().forEach(CachedRef::clear);
+            newMap.accept(this.objects);
+            this.objectRefs.values().forEach(CachedRef::clear);
 
-        if (oldMap == null) {
-            return;
+            if (oldMap == null) {
+                return;
+            }
+            this.objects.keySet().forEach(oldMap::remove);
+            oldMap.forEach((i, t) -> this.objectRefs.remove(t.getId()));
         }
-        this.objects.keySet().forEach(oldMap::remove);
-        oldMap.forEach((i, t) -> this.objectRefs.remove(t.getId()));
     }
 
     @Override
@@ -56,19 +58,23 @@ public class DynamicCachedObjectManager<T extends IPS2Object> extends AbstractDy
         if (id <= 0) {
             return null;
         }
-        T ret = this.objects.get(id);
-        if (ret == null) {
-            ret = get(id);
-            if (ret != null && cacheCheck.test(ret)) {
-                this.objects.put(id, ret);
+        synchronized (this.objectRefs) {
+            T ret = this.objects.get(id);
+            if (ret == null) {
+                ret = get(id);
+                if (ret != null && cacheCheck.test(ret)) {
+                    this.objects.put(id, ret);
+                }
             }
+            return ret;
         }
-        return ret;
     }
 
     @Override
     public IPS2ObjectReference<T> getReference(long id) {
-        return this.objectRefs.computeIfAbsent(id, CachedRef::new);
+        synchronized (this.objectRefs) {
+            return this.objectRefs.computeIfAbsent(id, CachedRef::new);
+        }
     }
 
 }
