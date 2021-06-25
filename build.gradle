@@ -1,10 +1,11 @@
 plugins {
-    id "java"
+    id "java-library"
     id "com.github.johnrengelman.shadow" version "7.0.0"
+    id "nl.elec332.gradle.ossrhplugin" version "1.1.0"
 }
 
 group 'nl.elec332.planetside2'
-version '1.0-SNAPSHOT'
+version '1.0-Beta1'
 
 sourceCompatibility = targetCompatibility = 11
 
@@ -12,24 +13,49 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    merge
+}
+
+configurations.compileOnly.extendsFrom(configurations.merge)
+
 dependencies {
-    implementation "com.google.code.gson:gson:2.8.6"
-    implementation "com.neovisionaries:nv-websocket-client:2.14"
+    api "com.google.code.gson:gson:2.8.6"
+    merge "com.neovisionaries:nv-websocket-client:2.14"
+}
+
+ossrh {
+    description = 'Java implementation/wrapper for the DGB Census API for PlanetSide2'
+    githubUrl = 'https://github.com/Elec332/PlanetSide2API'
+
+    license {
+        name = 'GNU Lesser General Public License, version 2.1'
+        url = 'https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt'
+    }
+    developer {
+        name = 'Elec332'
+    }
+}
+
+javadoc {
+    modularity.inferModulePath = false
 }
 
 shadowJar {
-    dependencies {
-        include(dependency("com.neovisionaries:nv-websocket-client"))
-    }
+    configurations = [project.configurations.merge]
     relocate "com.neovisionaries", "rl.ps2.socket"
     minimize()
     getExcludes().remove("module-info.class")
+    doLast {
+        components.java.withVariantsFromConfiguration(project.configurations.shadowRuntimeElements, {a ->
+            a.skip()
+        })
+    }
 }
 
 compileJava {
-    options.compilerArgs += ['--add-reads', 'nl.elec332.planetside2api=ALL-UNNAMED']
+    options.compilerArgs += ['--add-reads', 'nl.elec332.planetside2.api=ALL-UNNAMED']
 }
 
-tasks.jar.enabled(false)
-tasks.jar.dependsOn(shadowJar)
+tasks.jar.finalizedBy(shadowJar)
 tasks.shadowJar.archiveClassifier = ""

@@ -1,22 +1,22 @@
 package nl.elec332.planetside2.apitests;
 
-import com.neovisionaries.ws.client.*;
-import nl.elec332.planetside2.api.IPS2APIAccessor;
-import nl.elec332.planetside2.api.objects.IPS2API;
-import nl.elec332.planetside2.api.objects.player.IOutfit;
-import nl.elec332.planetside2.api.streaming.IStreamingService;
-import nl.elec332.planetside2.api.streaming.request.IEventServiceFactory;
-import nl.elec332.planetside2.impl.PS2APIAccessor;
+//import com.neovisionaries.ws.client.*;
+
+import nl.elec332.planetside2.ps2api.api.IPS2APIAccessor;
+import nl.elec332.planetside2.ps2api.api.objects.IPS2API;
+import nl.elec332.planetside2.ps2api.api.objects.player.IOutfit;
+import nl.elec332.planetside2.ps2api.api.streaming.IStreamingService;
+import nl.elec332.planetside2.ps2api.api.streaming.request.IEventServiceFactory;
+import nl.elec332.planetside2.ps2api.util.NetworkUtil;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 /**
  * Created by Elec332 on 01/05/2021
  */
 public class WSTest {
 
-    public static void main(String[] args) throws IOException, WebSocketException {
+    public static void main(String[] args) throws IOException {//, WebSocketException {
 //        WebSocketFactory factory = new WebSocketFactory().setConnectionTimeout(5000);
 //        WebSocket ws = factory.createSocket("wss://push.planetside2.com/streaming?environment=ps2&service-id=" + args[0]);
 //        ws.addListener(new WebSocketAdapter() {
@@ -31,10 +31,11 @@ public class WSTest {
 //        System.out.println(Arrays.toString(test));
 
 
-        IPS2APIAccessor accessor = PS2APIAccessor.INSTANCE;
+        IPS2APIAccessor accessor = NetworkUtil.getAPIAccessor();
         accessor.setServiceId(args[0]);
         IStreamingService streamingService = accessor.createStreamingService();
-        IEventServiceFactory eventServiceFactory = accessor.getEventServiceFactory();;
+        IEventServiceFactory eventServiceFactory = accessor.getEventServiceFactory();
+        ;
         IPS2API api = accessor.getAPI();
         streamingService.addListener(eventServiceFactory.getFacilityControlType(), e -> {
             if (e.getContinent() == null) {

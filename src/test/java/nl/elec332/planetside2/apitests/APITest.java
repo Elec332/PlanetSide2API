@@ -1,14 +1,9 @@
 package nl.elec332.planetside2.apitests;
 
-import nl.elec332.planetside2.api.objects.IPS2API;
-import nl.elec332.planetside2.api.IPS2APIAccessor;
-import nl.elec332.planetside2.impl.PS2APIAccessor;
-import nl.elec332.planetside2.util.PS2ItemSets;
-
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
-import java.util.Calendar;
+import nl.elec332.planetside2.ps2api.api.IPS2APIAccessor;
+import nl.elec332.planetside2.ps2api.api.objects.IPS2API;
+import nl.elec332.planetside2.ps2api.util.NetworkUtil;
+import nl.elec332.planetside2.ps2api.util.PS2ItemSets;
 
 /**
  * Created by Elec332 on 23/04/2021
@@ -17,7 +12,7 @@ public class APITest {
 
     public static void main(String[] args) {
         System.out.println("Initializing-----------------------");
-        IPS2APIAccessor accessor = PS2APIAccessor.INSTANCE;
+        IPS2APIAccessor accessor = NetworkUtil.getAPIAccessor();
         accessor.setServiceId(args[0]);
         IPS2API api = accessor.getAPI();
         api.getServers();
