@@ -27,6 +27,8 @@ public interface IStreamingService {
 
     void addHeartBeatListener(Consumer<IHeartBeatMessage> listener);
 
+    void setExceptionHandler(Consumer<Throwable> handler);
+
     void clearSubscriptions();
 
     void stop();

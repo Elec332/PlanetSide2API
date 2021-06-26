@@ -64,6 +64,7 @@ public class MetaGameEventEvent extends AbstractEvent implements IMetaGameEventE
                 ", instance_id=" + instance_id +
                 ", metagame_event_id=" + metagame_event_id +
                 ", metagame_event_state=" + metagame_event_state +
+                ", continent=" + getContinent() +
                 '}';
     }
 }

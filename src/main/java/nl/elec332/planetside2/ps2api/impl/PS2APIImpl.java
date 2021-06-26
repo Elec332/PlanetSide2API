@@ -165,9 +165,9 @@ class PS2APIImpl implements IPS2API {
                 while (true) {
                     try {
                         Thread.sleep(60 * 1000);
+                        updateData(counter);
                         counter++;
                         counter %= 60;
-                        updateData(counter);
                     } catch (Exception e) {
                         System.out.println("UpdateFail");
                         e.printStackTrace();

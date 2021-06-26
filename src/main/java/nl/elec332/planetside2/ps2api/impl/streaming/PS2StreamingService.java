@@ -63,40 +63,50 @@ public class PS2StreamingService implements IStreamingService {
     private final Set<Consumer<IHeartBeatMessage>> heartbeatListeners;
     private boolean confirmed, helped;
     private Map<String, Set<Consumer<IStreamingEvent>>> eventListeners;
+    private Consumer<Throwable> exceptionHandler = e -> {
+    };
 
     private void onTextMessage(String txt) {
-        if (!this.confirmed) {
-            if (txt.equals(CONNECT_CONFIRM)) {
-                confirmed = true;
+        try {
+            if (!this.confirmed) {
+                if (txt.equals(CONNECT_CONFIRM)) {
+                    confirmed = true;
+                    return;
+                }
+                throw new IllegalStateException();
+            }
+            if (!helped && txt.equals(HELP_MESSAGE)) {
+                helped = true;
                 return;
             }
-            throw new IllegalStateException();
-        }
-        if (!helped && txt.equals(HELP_MESSAGE)) {
-            helped = true;
-            return;
-        }
-        JsonObject object = NetworkUtil.GSON.fromJson(txt, JsonObject.class);
-        String type = object.get("type").getAsString();
-        if (type == null || type.equals("serviceStateChanged")) {
-            System.out.println(txt);
-            return;
-        }
-        if (type.equals("heartbeat")) {
-            HeartBeatEvent h = new HeartBeatEvent(object.getAsJsonObject("online"));
-            heartbeatListeners.forEach(l -> l.accept(h));
-            return;
-        }
-        if (type.equals("serviceMessage")) {
-            try {
-                IStreamingEvent e = NetworkUtil.GSON.fromJson(object.get("payload"), IStreamingEvent.class);
-                getListeners(e.getEventName()).forEach(c -> c.accept(e));
-            } catch (Exception e) {
-                e.printStackTrace();
+            JsonObject object = NetworkUtil.GSON.fromJson(txt, JsonObject.class);
+            String type = object.get("type").getAsString();
+            if (type == null || type.equals("serviceStateChanged")) {
+                System.out.println(txt);
+                return;
             }
-            return;
+            if (type.equals("heartbeat")) {
+                HeartBeatEvent h = new HeartBeatEvent(object.getAsJsonObject("online"));
+                heartbeatListeners.forEach(l -> l.accept(h));
+                return;
+            }
+            if (type.equals("serviceMessage")) {
+                try {
+                    IStreamingEvent e = NetworkUtil.GSON.fromJson(object.get("payload"), IStreamingEvent.class);
+                    getListeners(e.getEventName()).forEach(c -> c.accept(e));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return;
+            }
+            throw new UnsupportedOperationException("Invalid type: " + type);
+        } catch (Exception e) {
+            try {
+                this.exceptionHandler.accept(e);
+            } catch (Exception e2) {
+                e2.printStackTrace();
+            }
         }
-        throw new UnsupportedOperationException("Invalid type: " + type);
     }
 
     private Set<Consumer<IStreamingEvent>> getListeners(String name) {
@@ -152,6 +162,15 @@ public class PS2StreamingService implements IStreamingService {
     @Override
     public void addHeartBeatListener(Consumer<IHeartBeatMessage> listener) {
         this.heartbeatListeners.add(listener);
+    }
+
+    @Override
+    public void setExceptionHandler(Consumer<Throwable> handler) {
+        if (handler == null) {
+            handler = e -> {
+            };
+        }
+        this.exceptionHandler = handler;
     }
 
     @Override
