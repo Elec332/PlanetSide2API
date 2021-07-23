@@ -6,6 +6,7 @@ import nl.elec332.planetside2.ps2api.api.objects.registry.IPS2ObjectReference;
 import nl.elec332.planetside2.ps2api.api.streaming.event.base.IStreamingEvent;
 import nl.elec332.planetside2.ps2api.impl.PS2APIAccessor;
 
+import javax.net.ssl.SSLException;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -64,6 +65,9 @@ public class NetworkUtil {
         } catch (Exception e) {
             if (e instanceof ConnectException) {
                 throw new RuntimeException("Failed to connect to: " + url.getHost());
+            }
+            if (e instanceof SSLException) {
+                throw new RuntimeException("Could not connect due to SSL issues.", e);
             }
             throw new RuntimeException("Failed to poke API! (" + e.getMessage() + ")", e);
         }

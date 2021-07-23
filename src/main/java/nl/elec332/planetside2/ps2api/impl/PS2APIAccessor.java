@@ -37,7 +37,10 @@ public class PS2APIAccessor implements IPS2APIAccessor {
         if (!started) {
             locked = true;
             started = true;
-            censusAPI = new CensusAPI(sid);
+            if (censusAPI != null && !censusAPI.matchesSID(sid)) {
+                censusAPI = null;
+            }
+            getCensusAPI_();
             instance = new PS2APIImpl(censusAPI);
             streamingServices = new HashSet<>();
             streamEventPoller = new PS2StreamEventPoller(censusAPI);
@@ -52,10 +55,16 @@ public class PS2APIAccessor implements IPS2APIAccessor {
         PS2APIAccessor.sid = Objects.requireNonNull(sid);
     }
 
+    private static ICensusAPI getCensusAPI_() {
+        if (censusAPI == null) {
+            censusAPI = new CensusAPI(sid);
+        }
+        return censusAPI;
+    }
+
     @Override
     public ICensusAPI getCensusAPI() {
-        init();
-        return censusAPI;
+        return getCensusAPI_();
     }
 
     @Override

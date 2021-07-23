@@ -23,12 +23,23 @@ public class CensusAPI implements ICensusAPI {
 
     private static final String RETURNED = "returned";
     private final String sid;
+    private boolean ssl = true;
 
     /**
      * Invokes a call to the Planetside2 Census API
      */
     private JsonObject invokeAPI_(String root, String command) {
-        return NetworkUtil.readJsonFromURL("https://census.daybreakgames.com/" + sid + "/get/ps2:v2/" + root + "/?" + NetworkUtil.toURLString(command), true);
+        return NetworkUtil.readJsonFromURL("http" + (ssl ? "s" : "") + "://census.daybreakgames.com/" + sid + "/get/ps2:v2/" + root + "/?" + NetworkUtil.toURLString(command), true);
+    }
+
+    @Override
+    public void disableSSL() {
+        this.ssl = false;
+    }
+
+    @Override
+    public boolean matchesSID(String sid) {
+        return this.sid.equals(sid);
     }
 
     @Override

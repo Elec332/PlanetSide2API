@@ -12,6 +12,10 @@ import java.util.stream.Stream;
  */
 public interface ICensusAPI {
 
+    void disableSSL();
+
+    boolean matchesSID(String sid);
+
     JsonArray invokeAPI(String root, String command);
 
     <T> Stream<T> invokeAPI(String root, String command, Class<T> type);
