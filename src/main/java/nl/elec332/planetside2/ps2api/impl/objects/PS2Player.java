@@ -5,6 +5,7 @@ import nl.elec332.planetside2.ps2api.api.objects.player.IOutfit;
 import nl.elec332.planetside2.ps2api.api.objects.player.IPlayer;
 import nl.elec332.planetside2.ps2api.api.objects.registry.IPS2ObjectReference;
 import nl.elec332.planetside2.ps2api.api.objects.world.IFaction;
+import nl.elec332.planetside2.ps2api.api.objects.world.IServer;
 
 import java.time.Instant;
 import java.util.Objects;
@@ -29,6 +30,8 @@ public class PS2Player implements IPlayer {
     private int prestige_level;
     @SerializedName("outfit_member.outfit_id")
     private IPS2ObjectReference<IOutfit> outfit;
+    @SerializedName("world.world_id")
+    private IPS2ObjectReference<IServer> server;
 
     @Override
     public long getId() {
@@ -43,6 +46,11 @@ public class PS2Player implements IPlayer {
     @Override
     public IFaction getFaction() {
         return this.faction_id.getObject();
+    }
+
+    @Override
+    public IServer getServer() {
+        return this.server.getObject();
     }
 
     @Override
@@ -71,8 +79,8 @@ public class PS2Player implements IPlayer {
     }
 
     @Override
-    public IOutfit getOutfit() {
-        return this.outfit.getObject();
+    public IPS2ObjectReference<IOutfit> getOutfit() {
+        return this.outfit;
     }
 
     //Auto-generated

@@ -1,6 +1,8 @@
 package nl.elec332.planetside2.ps2api.api.objects.player;
 
+import nl.elec332.planetside2.ps2api.api.objects.registry.IPS2ObjectReference;
 import nl.elec332.planetside2.ps2api.api.objects.world.IFaction;
+import nl.elec332.planetside2.ps2api.api.objects.world.IServer;
 
 import java.time.Instant;
 
@@ -18,6 +20,8 @@ public interface IPlayer extends ISlimPlayer {
     @Override
     IFaction getFaction();
 
+    IServer getServer();
+
     Instant getCreationDate();
 
     Instant getLastLoginDate();
@@ -28,6 +32,6 @@ public interface IPlayer extends ISlimPlayer {
 
     boolean hasASP();
 
-    IOutfit getOutfit();
+    IPS2ObjectReference<IOutfit> getOutfit();
 
 }

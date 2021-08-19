@@ -65,6 +65,7 @@ class PS2APIImpl implements IPS2API {
                         .show()
                         .show("character_id", "name.first", "faction_id", "times.creation", "times.last_save", "times.last_login", "battle_rank.value", "prestige_level")
                         .join("outfit_member", j -> j.injectAt("outfit_member").show("outfit_id"))
+                        .join("characters_world", j -> j.injectAt("world").show("world_id"))
                         .build()
                 , "name.first_lower");
         this.requestHandler = new PlayerRequestHandler(api);

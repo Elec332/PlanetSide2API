@@ -58,6 +58,7 @@ public class PS2StreamingService implements IStreamingService {
 
     private static final String CONNECT_CONFIRM = "{\"connected\":\"true\",\"service\":\"push\",\"type\":\"connectionStateChanged\"}";
     private static final String HELP_MESSAGE = "{\"send this for help\":{\"service\":\"event\",\"action\":\"help\"}}";
+    private static final String SUBSCRIPTION_CONFIRM = "{\"subscription\":";
 
     private final WebSocket webSocket;
     private final Set<Consumer<IHeartBeatMessage>> heartbeatListeners;
@@ -79,10 +80,13 @@ public class PS2StreamingService implements IStreamingService {
                 helped = true;
                 return;
             }
+            if (txt.startsWith(SUBSCRIPTION_CONFIRM)) {
+                return;
+            }
             JsonObject object = NetworkUtil.GSON.fromJson(txt, JsonObject.class);
             String type = object.get("type").getAsString();
             if (type == null || type.equals("serviceStateChanged")) {
-                System.out.println(txt);
+                System.out.println("serviceChanged" + txt);
                 return;
             }
             if (type.equals("heartbeat")) {
@@ -102,6 +106,7 @@ public class PS2StreamingService implements IStreamingService {
             throw new UnsupportedOperationException("Invalid type: " + type);
         } catch (Exception e) {
             try {
+                System.out.println("ERR: " + txt);
                 this.exceptionHandler.accept(e);
             } catch (Exception e2) {
                 e2.printStackTrace();
