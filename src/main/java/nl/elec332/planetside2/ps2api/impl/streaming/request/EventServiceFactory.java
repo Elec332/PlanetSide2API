@@ -20,7 +20,17 @@ public enum EventServiceFactory implements IEventServiceFactory {
 
     private static final IStreamingEventType<IAchievementEarnedEvent> ACHIEVEMENT = new StreamingEventType<>(IAchievementEarnedEvent.class, "AchievementEarned");
     private static final IStreamingEventType<IBattleRankUpEvent> BR_UP = new StreamingEventType<>(IBattleRankUpEvent.class, "BattleRankUp");
-    private static final IStreamingEventType<IContinentStateEvent> CONTINENT_LOCK = new StreamingEventType<>(IContinentStateEvent.class, "ContinentLock");
+    private static final IStreamingEventType<IContinentStateEvent> CONTINENT_LOCK = new StreamingEventType<>(IContinentStateEvent.class, "ContinentLock", e -> {
+        if (e.getContinent() == null) {
+            return false;
+        }
+        if (e.getTriggeringFaction() == null) {
+            System.out.print("Null faction: ");
+            System.out.println(e);
+            return false;
+        }
+        return true;
+    });
     private static final IStreamingEventType<IContinentStateEvent> CONTINENT_UNLOCK = new StreamingEventType<>(IContinentStateEvent.class, "ContinentUnlock");
     private static final IStreamingEventType<IDeathEvent> DEATH = new StreamingEventType<>(IDeathEvent.class, "Death");
     private static final IStreamingEventType<IFacilityControlEvent> FACILITY_CONTROL = new StreamingEventType<>(IFacilityControlEvent.class, "FacilityControl");

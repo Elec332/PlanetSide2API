@@ -28,6 +28,7 @@ public class PS2Item implements IItem {
     private int max_stack_size;
     private IPS2ObjectReference<ICertificationLine> skill_set_id;
     private int is_default_attachment;
+    private int image_id;
 
     @Override
     public long getId() {
@@ -79,18 +80,23 @@ public class PS2Item implements IItem {
         return this.is_default_attachment == 1;
     }
 
+    @Override
+    public int getImageId() {
+        return this.image_id;
+    }
+
     //Auto-generated
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PS2Item ps2Item = (PS2Item) o;
-        return item_id == ps2Item.item_id && is_vehicle_weapon == ps2Item.is_vehicle_weapon && max_stack_size == ps2Item.max_stack_size && is_default_attachment == ps2Item.is_default_attachment && Objects.equals(item_type_id, ps2Item.item_type_id) && Objects.equals(item_category_id, ps2Item.item_category_id) && Objects.equals(name, ps2Item.name) && Objects.equals(description, ps2Item.description) && Objects.equals(faction_id, ps2Item.faction_id) && Objects.equals(skill_set_id, ps2Item.skill_set_id);
+        return item_id == ps2Item.item_id && is_vehicle_weapon == ps2Item.is_vehicle_weapon && max_stack_size == ps2Item.max_stack_size && is_default_attachment == ps2Item.is_default_attachment && image_id == ps2Item.image_id && Objects.equals(item_type_id, ps2Item.item_type_id) && Objects.equals(item_category_id, ps2Item.item_category_id) && Objects.equals(name, ps2Item.name) && Objects.equals(description, ps2Item.description) && Objects.equals(faction_id, ps2Item.faction_id) && Objects.equals(skill_set_id, ps2Item.skill_set_id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(item_id, item_type_id, item_category_id, is_vehicle_weapon, name, description, faction_id, max_stack_size, skill_set_id, is_default_attachment);
+        return Objects.hash(item_id, item_type_id, item_category_id, is_vehicle_weapon, name, description, faction_id, max_stack_size, skill_set_id, is_default_attachment, image_id);
     }
 
     @Override
@@ -106,7 +112,7 @@ public class PS2Item implements IItem {
                 ", max_stack_size=" + max_stack_size +
                 ", skill_set_id=" + skill_set_id +
                 ", is_default_attachment=" + is_default_attachment +
+                ", image_id=" + image_id +
                 '}';
     }
-
 }

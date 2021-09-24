@@ -3,7 +3,9 @@ package nl.elec332.planetside2.ps2api.api;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import nl.elec332.planetside2.ps2api.api.objects.IHasImage;
 
+import java.io.InputStream;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -23,5 +25,7 @@ public interface ICensusAPI {
     <T> Stream<T> invokeAPI(String root, String command, Function<JsonElement, T> deserializer);
 
     JsonObject requestSingleObject(String root, String command);
+
+    InputStream getImage(IHasImage img);
 
 }

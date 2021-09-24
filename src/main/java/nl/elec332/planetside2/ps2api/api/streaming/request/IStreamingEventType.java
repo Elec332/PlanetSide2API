@@ -13,4 +13,6 @@ public interface IStreamingEventType<T extends IStreamingEvent> {
 
     Class<T> getEventType();
 
+    boolean isValid(T event);
+
 }

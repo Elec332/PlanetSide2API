@@ -18,6 +18,7 @@ public class PS2Profile implements IPlayerProfile {
     private IPS2ObjectReference<IFaction> faction_id;
     @SerializedName("type2.description")
     private String name;
+    private int image_id;
 
     @Override
     public long getId() {
@@ -39,18 +40,23 @@ public class PS2Profile implements IPlayerProfile {
         return this.faction_id.getObject();
     }
 
+    @Override
+    public int getImageId() {
+        return this.image_id;
+    }
+
     //Auto-generated
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PS2Profile that = (PS2Profile) o;
-        return profile_id == that.profile_id && Objects.equals(profile_type_id, that.profile_type_id) && Objects.equals(faction_id, that.faction_id) && Objects.equals(name, that.name);
+        return profile_id == that.profile_id && image_id == that.image_id && Objects.equals(profile_type_id, that.profile_type_id) && Objects.equals(faction_id, that.faction_id) && Objects.equals(name, that.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(profile_id, profile_type_id, faction_id, name);
+        return Objects.hash(profile_id, profile_type_id, faction_id, name, image_id);
     }
 
     @Override
@@ -60,7 +66,7 @@ public class PS2Profile implements IPlayerProfile {
                 ", profile_type_id=" + profile_type_id +
                 ", faction_id=" + faction_id +
                 ", name='" + name + '\'' +
+                ", image_id=" + image_id +
                 '}';
     }
-
 }

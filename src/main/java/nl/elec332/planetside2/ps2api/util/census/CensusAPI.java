@@ -4,9 +4,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import nl.elec332.planetside2.ps2api.api.ICensusAPI;
+import nl.elec332.planetside2.ps2api.api.objects.IHasImage;
 import nl.elec332.planetside2.ps2api.util.Constants;
 import nl.elec332.planetside2.ps2api.util.NetworkUtil;
 
+import java.io.InputStream;
+import java.net.URL;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -29,7 +32,7 @@ public class CensusAPI implements ICensusAPI {
      * Invokes a call to the Planetside2 Census API
      */
     private JsonObject invokeAPI_(String root, String command) {
-        return NetworkUtil.readJsonFromURL("http" + (ssl ? "s" : "") + "://census.daybreakgames.com/" + sid + "/get/ps2:v2/" + root + "/?" + NetworkUtil.toURLString(command), true);
+        return NetworkUtil.readJsonFromURL(getURLBase() + sid + "/get/ps2:v2/" + root + "/?" + NetworkUtil.toURLString(command), true);
     }
 
     @Override
@@ -67,6 +70,24 @@ public class CensusAPI implements ICensusAPI {
             return null;
         }
         throw new UnsupportedOperationException("Returned object count is " + data.size());
+    }
+
+    @Override
+    public InputStream getImage(IHasImage img) {
+        int id = img.getImageId();
+        if (id < 0) {
+            throw new RuntimeException("Invalid image: " + img);
+        }
+        try {
+            URL url = new URL(getURLBase() + "files/ps2/images/static/" + id + ".png");
+            return url.openStream();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String getURLBase() {
+        return "http" + (ssl ? "s" : "") + "://census.daybreakgames.com/";
     }
 
     /**

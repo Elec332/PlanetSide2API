@@ -16,6 +16,7 @@ public class PS2Faction implements IFaction, Serializable {
     private String name;
     private String code_tag;
     private int user_selectable;
+    private int image_id;
 
     @Override
     public long getId() {
@@ -37,18 +38,23 @@ public class PS2Faction implements IFaction, Serializable {
         return this.user_selectable == 1;
     }
 
+    @Override
+    public int getImageId() {
+        return this.image_id;
+    }
+
     //Auto-generated
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PS2Faction that = (PS2Faction) o;
-        return faction_id == that.faction_id && user_selectable == that.user_selectable && Objects.equals(name, that.name) && Objects.equals(code_tag, that.code_tag);
+        return faction_id == that.faction_id && user_selectable == that.user_selectable && image_id == that.image_id && Objects.equals(name, that.name) && Objects.equals(code_tag, that.code_tag);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(faction_id, name, code_tag, user_selectable);
+        return Objects.hash(faction_id, name, code_tag, user_selectable, image_id);
     }
 
     @Override

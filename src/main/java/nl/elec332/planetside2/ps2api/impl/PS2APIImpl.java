@@ -70,12 +70,9 @@ class PS2APIImpl implements IPS2API {
                 , "name.first_lower");
         this.requestHandler = new PlayerRequestHandler(api);
         this.classes = new StaticUndocumentedObjectRegistry<>(PS2Class.class, r -> {
-            r.accept(new PS2Class(1, "Infiltrator"));
-            r.accept(new PS2Class(3, "Light Assault"));
-            r.accept(new PS2Class(4, "Combat Medic"));
-            r.accept(new PS2Class(5, "Engineer"));
-            r.accept(new PS2Class(6, "Heavy Assault"));
-            r.accept(new PS2Class(7, "MAX"));
+            for (nl.elec332.planetside2.ps2api.util.PS2Class c : nl.elec332.planetside2.ps2api.util.PS2Class.values()) {
+                r.accept(new PS2Class(c));
+            }
         });
         this.profiles = new StaticPS2ObjectRegistry<>(api, PS2Profile.class, "profile", "c:hide=name,description&c:join=profile_2^on:profile_id^show:description^inject_at:type2");
         this.vehicles = new StaticPS2ObjectRegistry<>(api, PS2Vehicle.class, "vehicle", "c:hide=description&c:lang=en&c:join=vehicle_faction^show:faction_id^inject_at:faction");

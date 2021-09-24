@@ -11,6 +11,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.ConnectException;
+import java.net.SocketException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -41,35 +42,57 @@ public class NetworkUtil {
         if (lenght > 700) {
             print = url_.substring(0, 350) + " ... " + url_.substring(lenght - 350, lenght);
         }
-        System.out.println("API call: " + print);
         URL url;
         try {
             url = new URL(url_);
         } catch (Exception e) {
             throw new RuntimeException("Invalid URL!");
         }
-        try {
-            InputStream is = url.openStream();
+        int f = 0;
+        while (true) {
             try {
-                BufferedReader rd = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-                String s = rd.lines().collect(Collectors.joining("\n")).replace(":\"-\"", ":{}");
-                JsonObject o = GSON.fromJson(s, JsonObject.class);
-                if (flatten) {
-                    flattenJsonSelectively(o);
-                    //System.out.println(GSON.toJson(o));
+                InputStream is = url.openStream();
+                try {
+                    BufferedReader rd = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+                    String s = rd.lines().collect(Collectors.joining("\n")).replace(":\"-\"", ":{}");
+                    JsonObject o;
+                    try {
+                        o = GSON.fromJson(s, JsonObject.class);
+                    } catch (Exception e) {
+                        System.out.println("Error JSON url: " + url_);
+                        System.out.println(s);
+                        throw e;
+                    }
+                    if (flatten) {
+                        flattenJsonSelectively(o);
+                        //System.out.println(GSON.toJson(o));
+                    }
+                    return o;
+                } finally {
+                    is.close();
                 }
-                return o;
-            } finally {
-                is.close();
+            } catch (Exception e) {
+                if (f < 2) {
+                    f++;
+                    try {
+                        Thread.sleep(100);
+                    } catch (Exception ex) {
+                        //nbc
+                    }
+                    continue;
+                }
+                System.out.println("API call: " + print);
+                if (e instanceof ConnectException) {
+                    throw new RuntimeException("Failed to connect to: " + url.getHost());
+                }
+                if (e instanceof SSLException) {
+                    throw new RuntimeException("Could not connect due to SSL issues.", e);
+                }
+                if (e instanceof SocketException) {
+                    throw new RuntimeException("SocketException caught, reason: " + e.getMessage());
+                }
+                throw new RuntimeException("Failed to poke API! (" + e.getMessage() + ")", e);
             }
-        } catch (Exception e) {
-            if (e instanceof ConnectException) {
-                throw new RuntimeException("Failed to connect to: " + url.getHost());
-            }
-            if (e instanceof SSLException) {
-                throw new RuntimeException("Could not connect due to SSL issues.", e);
-            }
-            throw new RuntimeException("Failed to poke API! (" + e.getMessage() + ")", e);
         }
     }
 

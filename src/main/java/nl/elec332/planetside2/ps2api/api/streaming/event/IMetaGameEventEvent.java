@@ -2,6 +2,7 @@ package nl.elec332.planetside2.ps2api.api.streaming.event;
 
 import nl.elec332.planetside2.ps2api.api.objects.misc.IMetaGameEvent;
 import nl.elec332.planetside2.ps2api.api.objects.misc.IMetaGameEventState;
+import nl.elec332.planetside2.ps2api.api.objects.world.IContinent;
 import nl.elec332.planetside2.ps2api.api.streaming.event.base.IStreamingEvent;
 
 /**
@@ -22,5 +23,9 @@ public interface IMetaGameEventEvent extends IStreamingEvent {
     IMetaGameEvent getEvent();
 
     IMetaGameEventState getEventState();
+
+    //Can be null!!
+    @Override
+    IContinent getContinent();
 
 }

@@ -17,6 +17,7 @@ public class PS2Vehicle implements IVehicle {
     private String name;
     @SerializedName("faction.faction_id")
     private IPS2ObjectReference<IFaction> faction;
+    private int image_id;
 
     @Override
     public long getId() {
@@ -36,18 +37,23 @@ public class PS2Vehicle implements IVehicle {
         return null;
     }
 
+    @Override
+    public int getImageId() {
+        return this.image_id;
+    }
+
     //Auto-generated
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PS2Vehicle that = (PS2Vehicle) o;
-        return vehicle_id == that.vehicle_id && Objects.equals(name, that.name) && Objects.equals(faction, that.faction);
+        return vehicle_id == that.vehicle_id && image_id == that.image_id && Objects.equals(name, that.name) && Objects.equals(faction, that.faction);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(vehicle_id, name, faction);
+        return Objects.hash(vehicle_id, name, faction, image_id);
     }
 
     @Override
@@ -55,8 +61,8 @@ public class PS2Vehicle implements IVehicle {
         return "PS2Vehicle{" +
                 "vehicle_id=" + vehicle_id +
                 ", name='" + name + '\'' +
-                ", faction=" + getFaction() +
+                ", faction=" + faction +
+                ", image_id=" + image_id +
                 '}';
     }
-
 }

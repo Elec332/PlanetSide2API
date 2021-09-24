@@ -15,6 +15,7 @@ final class StreamingEventDeserializer implements JsonDeserializer<IStreamingEve
     private static final Gson GSON = new Gson();
 
     @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public IStreamingEvent deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         JsonObject o = json.getAsJsonObject();
         String name;
@@ -27,7 +28,11 @@ final class StreamingEventDeserializer implements JsonDeserializer<IStreamingEve
         if (type == null) {
             throw new RuntimeException("Event name unsupported: " + name);
         }
-        return NetworkUtil.GSON.fromJson(json, EventServiceFactory.getImplementation(type.getEventType()));
+        IStreamingEvent ret = NetworkUtil.GSON.fromJson(json, EventServiceFactory.getImplementation(type.getEventType()));
+        if (!((IStreamingEventType) type).isValid(ret)) {
+            return null;
+        }
+        return ret;
     }
 
 }
