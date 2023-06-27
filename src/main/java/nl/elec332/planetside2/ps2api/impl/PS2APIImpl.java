@@ -21,6 +21,8 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ForkJoinPool;
 
 /**
  * Created by Elec332 on 23/04/2021
@@ -163,7 +165,8 @@ class PS2APIImpl implements IPS2API {
                 while (true) {
                     try {
                         Thread.sleep(60 * 1000);
-                        updateData(counter);
+                        int fc = counter;
+                        CompletableFuture.runAsync(() -> updateData(fc), ForkJoinPool.commonPool());
                         counter++;
                         counter %= 60;
                     } catch (Exception e) {
@@ -345,6 +348,7 @@ class PS2APIImpl implements IPS2API {
         }
         if (minute % 10 == 0) {     //Every 10 mins
             outfits.update();
+            System.out.println("UpdateOutfits");
         }
     }
 

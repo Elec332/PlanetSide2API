@@ -83,18 +83,22 @@ public class PS2Player implements IPlayer {
         return this.outfit;
     }
 
+    private long getOutfitId() {
+        return this.outfit == null ? -1 : this.outfit.getId();
+    }
+
     //Auto-generated
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PS2Player ps2Player = (PS2Player) o;
-        return character_id == ps2Player.character_id && battleRank == ps2Player.battleRank && prestige_level == ps2Player.prestige_level && Objects.equals(name, ps2Player.name) && Objects.equals(faction_id, ps2Player.faction_id) && Objects.equals(creation, ps2Player.creation) && Objects.equals(last_save, ps2Player.last_save) && Objects.equals(last_login, ps2Player.last_login) && Objects.equals(outfit.getId(), ps2Player.outfit.getId());
+        return character_id == ps2Player.character_id && battleRank == ps2Player.battleRank && prestige_level == ps2Player.prestige_level && Objects.equals(name, ps2Player.name) && Objects.equals(faction_id, ps2Player.faction_id) && Objects.equals(creation, ps2Player.creation) && Objects.equals(last_save, ps2Player.last_save) && Objects.equals(last_login, ps2Player.last_login) && Objects.equals(getOutfitId(), ps2Player.getOutfitId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(character_id, name, faction_id, creation, last_save, last_login, battleRank, prestige_level, outfit.getId());
+        return Objects.hash(character_id, name, faction_id, creation, last_save, last_login, battleRank, prestige_level, getOutfitId());
     }
 
     @Override
@@ -108,7 +112,7 @@ public class PS2Player implements IPlayer {
                 ", last_login=" + last_login +
                 ", battleRank=" + battleRank +
                 ", prestige_level=" + prestige_level +
-                ", outfit_id=" + outfit.getId() +
+                ", outfit_id=" + getOutfitId() +
                 '}';
     }
 

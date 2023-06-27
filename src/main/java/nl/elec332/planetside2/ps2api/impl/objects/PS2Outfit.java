@@ -48,7 +48,7 @@ public class PS2Outfit implements IOutfit {
             member_map.remove(0L);
             membersFiltered = true;
         }
-        return member_map;
+        return Collections.unmodifiableMap(member_map);
     }
 
     @Override
@@ -134,7 +134,11 @@ public class PS2Outfit implements IOutfit {
     }
 
     private OnlineStatus getOnlineStatus() {
-        return NetworkUtil.GSON.fromJson(PS2APIAccessor.INSTANCE.getCensusAPI().requestSingleObject("outfit", "outfit_id=" + outfit_id + "&c:join=outfit_member^list:1^inject_at:member_map^show:character_id(characters_online_status^on:character_id^inject_at:online^show:online_status)&c:tree=start:member_map^field:character_id"), OnlineStatus.class);
+        try {
+            return NetworkUtil.GSON.fromJson(PS2APIAccessor.INSTANCE.getCensusAPI().requestSingleObject("outfit", "outfit_id=" + outfit_id + "&c:join=outfit_member^list:1^inject_at:member_map^show:character_id(characters_online_status^on:character_id^inject_at:online^show:online_status)&c:tree=start:member_map^field:character_id"), OnlineStatus.class);
+        } catch (Exception e) {
+            throw new RuntimeException("outfit" + "/?" + "outfit_id=" + outfit_id + "&c:join=outfit_member^list:1^inject_at:member_map^show:character_id(characters_online_status^on:character_id^inject_at:online^show:online_status)&c:tree=start:member_map^field:character_id", e);
+        }
     }
 
     private static class OnlineStatus implements Serializable {

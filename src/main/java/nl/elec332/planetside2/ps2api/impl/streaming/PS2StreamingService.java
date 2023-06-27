@@ -8,6 +8,7 @@ import com.neovisionaries.ws.client.WebSocketFactory;
 import nl.elec332.planetside2.ps2api.api.objects.world.IServer;
 import nl.elec332.planetside2.ps2api.api.streaming.IHeartBeatMessage;
 import nl.elec332.planetside2.ps2api.api.streaming.IStreamingService;
+import nl.elec332.planetside2.ps2api.api.streaming.event.IMetaGameEventEvent;
 import nl.elec332.planetside2.ps2api.api.streaming.event.base.IStreamingEvent;
 import nl.elec332.planetside2.ps2api.api.streaming.request.IStreamingEventType;
 import nl.elec332.planetside2.ps2api.impl.streaming.request.EventServiceRequest;
@@ -37,16 +38,23 @@ public class PS2StreamingService implements IStreamingService {
             }
 
         });
-        this.webSocket.connect();
         Thread thread = new Thread(() -> {
-            while (webSocket.isOpen()) {
+            while (true) {
                 try {
-                    //noinspection BusyWait
-                    Thread.sleep(60000);
+                    this.webSocket.connect();
+                    while (webSocket.isOpen()) {
+                        try {
+                            //noinspection BusyWait
+                            Thread.sleep(60000);
+                        } catch (Exception e) {
+                            //nbc
+                        }
+                        webSocket.sendText("\"action\": \"echo\",\"payload\": {\"test\": \"test\"},\"service\": \"event\"}");
+                    }
                 } catch (Exception e) {
-                    //nbc
+                    e.printStackTrace();
+                    break;
                 }
-                webSocket.sendText("\"action\": \"echo\",\"payload\": {\"test\": \"test\"},\"service\": \"event\"}");
             }
             for (int i = 0; i < 10; i++) {
                 System.out.println("EXITUS WEBSOCKETUS");
@@ -97,7 +105,11 @@ public class PS2StreamingService implements IStreamingService {
             if (type.equals("serviceMessage")) {
                 try {
                     IStreamingEvent e = NetworkUtil.GSON.fromJson(object.get("payload"), IStreamingEvent.class);
-                    getListeners(e.getEventName()).forEach(c -> c.accept(e));
+                    if (e != null) {
+                        if (txt.contains("MetagameEvent") && e instanceof IMetaGameEventEvent && ((IMetaGameEventEvent) e).getEvent() == null)
+                            System.out.println(txt);
+                        getListeners(e.getEventName()).forEach(c -> c.accept(e));
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

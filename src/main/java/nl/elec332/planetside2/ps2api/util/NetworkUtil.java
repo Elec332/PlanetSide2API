@@ -55,6 +55,9 @@ public class NetworkUtil {
                 try {
                     BufferedReader rd = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
                     String s = rd.lines().collect(Collectors.joining("\n")).replace(":\"-\"", ":{}");
+                    if (s.contains("<html>")) {
+                        throw new RuntimeException("HTML bullshit");
+                    }
                     JsonObject o;
                     try {
                         o = GSON.fromJson(s, JsonObject.class);
